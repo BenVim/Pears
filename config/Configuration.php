@@ -6,9 +6,14 @@
  * Time: 15:46
  */
 
+namespace config;
+
 class Configuration
 {
 
+    public static function GetRedisKeyConfig(){
+
+    }
 
 
 }

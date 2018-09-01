@@ -9,19 +9,15 @@
 
 namespace src;
 
-use lib\core\BaseObject;
+use config\Configuration;
+use config\RedisKeyConfig;
 use lib\core\Config;
 use lib\core\Log;
 use lib\core\PDORepository;
+use lib\core\RedisKeyContainer;
 use lib\core\SwooleWebSocket;
-use src\command\TickCommand;
 use src\factory\CommandFactory;
 use src\factory\CommandType;
-use src\models\PlayerModel;
-use src\models\UserModel;
-use src\platform\GuildManager;
-use src\util\RedisKeyList;
-use src\util\RedisUtility;
 
 class MainApp
 {
@@ -55,20 +51,10 @@ class MainApp
     public function initData()
     {
         //清理在线人数记录
-        $this->redis        = new RedisUtility();
-        $this->redisKeyList = new RedisKeyList();
-        $key                = $this->redisKeyList->getRedisKey(RedisKeyList::REDIS_KEY_ONLINE);
-        $this->redis->delete($key);
-        $this->clearData(RedisKeyList::REDIS_KEY_USER_FD);
-        $this->clearData(RedisKeyList::REDIS_KEY_UNION_LIST);
-        $this->clearData(RedisKeyList::REDIS_KEY_LOGIN_CLIENT_INFO);//清理redis 用户登录的数据。
-        $this->clearData(RedisKeyList::REDIS_KEY_USER_HOUSE);
-        $this->clearData(RedisKeyList::REDIS_KEY_UNION_RULE_KEY);
-        $this->clearData(RedisKeyList::REDIS_KEY_UNION_USER_KEY);
-        $this->clearData(RedisKeyList::REDIS_KEY_UNION_CURRENT_KEY);
+        $this->resetRedisData(RedisKeyContainer::getRedisKey(RedisKeyConfig::REDIS_KEY_LOG, 0));
     }
 
-    private function clearData($k)
+    private function resetRedisData($k)
     {
         $key     = $this->redisKeyList->getRedisKey($k, "*");
         $keyList = $this->redis->getKeys($key);
