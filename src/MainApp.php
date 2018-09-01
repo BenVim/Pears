@@ -45,7 +45,7 @@ class MainApp
 
     public function init()
     {
-        $path = \getcwd() . '/.env';
+        $path = \getcwd() . '/..env';
         Config::loadConfigurationFiles($path);
         $this->initData();
         $this->server = new SwooleWebSocket(Config::get('server.ip'), Config::get('server.port'), $this);

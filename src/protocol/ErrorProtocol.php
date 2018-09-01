@@ -1,19 +1,25 @@
 <?php
-/*
- * @Author: Ben
- * @Date: 2017-08-18 15:47:00
- * @Last Modified by: Ben
- * @Last Modified time: 2017-08-29 17:32:28
-*/
+/**
+ * Created by PhpStorm.
+ * User: ben
+ * Date: 2018/8/31
+ * Time: 17:42
+ */
 
-namespace src\error;
+namespace src\protocol;
 
-use lib\core\BaseObject;
 
-class ErrorException
+/**
+ * Trait ErrorProtocol 错误的协议组装器
+ * @package src\protocol
+ *
+ */
+trait ErrorProtocol
 {
 
-    const ERROR_NOT_FOUND_USER = 1001; //创建房间失败
+    public function getErrorProtocol(){
+
+    }
 
     /**
      * @param $error_status_code
@@ -23,7 +29,7 @@ class ErrorException
     {
         $postData      = array();
         $postData['t'] = 'error';
-        $postData['d'] = array('c' => $error_status_code, 'm' => $this->errorMsg($error_status_code));
+        $postData['d'] = array('c' => $error_status_code, 'm' => ErrorException::errorMsg($error_status_code));
         return $postData;
     }
 
@@ -40,13 +46,5 @@ class ErrorException
         $postData['d'] = array('c' => $error_code, 'm' => $msg, 'd'=>$data);
         return $postData;
     }
-
-    public static function errorMsg($code)
-    {
-        $error = [ErrorException::ERROR_NOT_FOUND_USER => "游戏服务器登录失败！",
-        ];
-        return $error[$code];
-    }
-
 
 }
