@@ -8,11 +8,13 @@ use lib\core\Log;
 
 class SwooleWebSocket
 {
-    private $server;
+    protected $server;
     protected $callbacks = [];
 
-    function __construct($host, $port, $obj)
+    function __construct($obj)
     {
+        $host = Config::get('server.ip');
+        $port = Config::get('server.port');
 
         $serverSetting = array(
             'worker_num'               => Config::get('server.worker_num'),
