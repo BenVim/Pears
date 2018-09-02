@@ -13,5 +13,6 @@ namespace config;
 class RedisKeyConfig
 {
     const REDIS_KEY_LOG = "pears:{uid}:";
+    const REDIS_KEY_ONLINE = "REDIS_KEY_ONLINE";
 
 }

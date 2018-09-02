@@ -9,8 +9,12 @@
 namespace src\factory;
 
 
+use config\RedisKeyConfig;
+use lib\core\Command;
 use lib\core\Config;
 use lib\core\PDORepository;
+use lib\core\RedisDBService;
+use lib\core\RedisKeyService;
 use lib\core\SwooleWebSocket;
 
 class SocketService
@@ -24,14 +28,15 @@ class SocketService
         $this->server = new SwooleWebSocket($this);
     }
 
-    public function startService(){
+    public function startService()
+    {
         $this->server->start();
     }
 
 
     public function onWorkerStart($server, $worker_id)
     {
-        $server->redis = new RedisService();
+        $server->redis = RedisDBService::getInstance();
         $server->db    = PDORepository::getInstance();
     }
 
@@ -59,13 +64,7 @@ class SocketService
 
         if ($opCode == WEBSOCKET_OPCODE_TEXT) {
             if ($finish) {
-                if ($messageData['t'] == CommandType::GAME_TICK_COMMAND_KEY) {
-                    $obj = new TickCommand($server);
-                    $obj->init($data);
-                    unset($obj);
-                } else {
-                    $task_id = $server->task(json_encode($data));
-                }
+                $task_id = $server->task(json_encode($data));
             }
         }
     }
@@ -73,7 +72,6 @@ class SocketService
     public function onTask($server, $task_id, $frame, $data)
     {
         dump("task_id:", $task_id);
-        //$data['task_id'] = $task_id;
         $this->route($server, $data);
     }
 
@@ -84,44 +82,15 @@ class SocketService
 
     public function onClose($server, $fd, $reactorId)
     {
-        $redis        = $server->redis;//new RedisUtility();
-        $redisKeyList = new RedisKeyList();
-
-        $onlineKey = $redisKeyList->getRedisKey(RedisKeyList::REDIS_KEY_ONLINE);
+        $redis     = $server->redis;
+        $onlineKey = RedisKeyService::getRedisKey(RedisKeyConfig::REDIS_KEY_ONLINE);
         $redis->sRemove($onlineKey, $fd);
-        dump("onClose", $fd);
-
-        $info = $server->connection_info($fd);
-        if ($info) {
-            $uid = $info['uid'];
-            if ($uid != 0) {
-                $db          = $server->db;//PDORepository::getInstance();
-                $playerModel = new PlayerModel($db);
-
-                $key = $redisKeyList->getRedisKey(RedisKeyList::REDIS_KEY_USER_FD, $uid);
-                if ($redis->getValue($key) == $fd) {
-                    $oldFd = $redis->getSet($key, 0);
-                    if ($oldFd != $fd) {
-                        $redis->getSet($key, $oldFd);
-                        $playerModel->updateFd($uid, $oldFd);
-                    } else {
-                        $playerModel->updateFd($uid, 0);
-                    }
-                }
-
-                //清理公会列表的用户
-                //找出用户对应的unionId.
-                $unionId = 0;
-                $obj     = new GuildManager($this->server, $unionId, $this->redis, $this->redisKeyList, 1);
-                $obj->clearOnlineFd($uid, $fd);
-            }
-        }
     }
 
     public function route($server, $respond)
     {
-        $result           = @json_decode($respond, true);
-        $data             = json_decode($result["data"], true);//$result["data"];
+        $result = @json_decode($respond, true);
+        $data   = json_decode($result["data"], true);
         if (!isset($data['t'])) {
             dump('no t param');
             return;
@@ -136,15 +105,16 @@ class SocketService
         $obj = CommandFactoryService::getInstance($data['t']);
 
         if ($obj) {
-            $obj->init($data);
-            $obj->receiveCommand();
-            unset($obj);
+            $this->initCommand($obj, $data);
         }
     }
 
-
-
-
+    private function initCommand(Command $obj, array $data)
+    {
+        $obj->init($data);
+        $obj->receiveCommand();
+        unset($obj);
+    }
 
 
 }
