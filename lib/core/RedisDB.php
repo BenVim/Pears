@@ -6,7 +6,7 @@ use Exception;
 use Redis;
 use lib\core\Config;
 
-
+// 改造成单例
 class RedisDB
 {
 
@@ -14,10 +14,10 @@ class RedisDB
 
     public function __construct()
     {
-
+        $this->getConnection();
     }
 
-    public function getConnection()
+    private function getConnection()
     {
         if ($this->redis) {
             return $this->redis;

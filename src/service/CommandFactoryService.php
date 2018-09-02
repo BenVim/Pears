@@ -8,7 +8,7 @@ namespace src\factory;
  * Date: 03/11/2017
  * Time: 17:13
  */
-class CommandFactory
+class CommandFactoryService
 {
     public static $list = [];
 

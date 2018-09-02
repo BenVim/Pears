@@ -14,10 +14,12 @@ use config\RedisKeyConfig;
 use lib\core\Config;
 use lib\core\Log;
 use lib\core\PDORepository;
+use lib\core\RedisDB;
 use lib\core\RedisKeyContainer;
 use lib\core\SwooleWebSocket;
-use src\factory\CommandFactory;
+use src\factory\CommandFactoryService;
 use src\factory\CommandType;
+use src\factory\RedisService;
 
 class MainApp
 {
@@ -30,46 +32,39 @@ class MainApp
     function __construct()
     {
 
-
-        $this->registerCommand();
-    }
-
-    private function registerCommand()
-    {
-        CommandFactory::init();
     }
 
     public function init()
     {
         $path = \getcwd() . '/..env';
         Config::loadConfigurationFiles($path);
-        $this->initData();
+    }
+
+    public function startService()
+    {
+        //注册协议命令
         $this->server = new SwooleWebSocket(Config::get('server.ip'), Config::get('server.port'), $this);
         $this->server->start();
     }
 
-    public function initData()
-    {
-        //清理在线人数记录
-        $this->resetRedisData(RedisKeyContainer::getRedisKey(RedisKeyConfig::REDIS_KEY_LOG, 0));
+    //启动服务之前
+    private function serviceStartBefore(){
+        $this->resetRedisData();
+        RedisService::resetRedisData();
+        CommandFactoryService::init();
     }
 
-    private function resetRedisData($k)
-    {
-        $key     = $this->redisKeyList->getRedisKey($k, "*");
-        $keyList = $this->redis->getKeys($key);
-        foreach ($keyList as $key) {
-            $this->redis->delete($key);
-        }
+    //启动服务之后
+    private function serviceStartAfter(){
+
     }
+
+
 
     public function onWorkerStart($server, $worker_id)
     {
-        dump('onWorkerStart');
-        $redis         = new RedisUtility();
-        $server->redis = $redis;
-        $db            = PDORepository::getInstance();
-        $server->db    = $db;
+        $server->redis = new RedisDB();
+        $server->db    = PDORepository::getInstance();
     }
 
     public function onStart($server)
@@ -170,7 +165,7 @@ class MainApp
         $data['db']       = $server->db;
         $obj              = null;
 
-        $obj = CommandFactory::getInstance($data['t']);
+        $obj = CommandFactoryService::getInstance($data['t']);
 
         if ($obj) {
             $obj->init($data);

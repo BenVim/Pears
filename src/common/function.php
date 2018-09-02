@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * function file 用户自己定义的函数可以放在这里，属于全局可调用的方法
+ */
 use lib\core\Config;
 
 function dump(...$args)
