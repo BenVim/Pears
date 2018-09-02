@@ -14,7 +14,7 @@ use config\RedisKeyConfig;
 use lib\core\Config;
 use lib\core\Log;
 use lib\core\PDORepository;
-use lib\core\RedisDB;
+use lib\core\RedisDBService;
 use lib\core\RedisKeyContainer;
 use lib\core\SwooleWebSocket;
 use src\factory\CommandFactoryService;
@@ -63,7 +63,7 @@ class MainApp
 
     public function onWorkerStart($server, $worker_id)
     {
-        $server->redis = new RedisDB();
+        $server->redis = new RedisService();
         $server->db    = PDORepository::getInstance();
     }
 

@@ -9,21 +9,24 @@
 namespace src\factory;
 
 
+use config\RedisKeyConfig;
+use lib\core\RedisDBService;
+use lib\core\RedisKeyService;
+
 class RedisService
 {
-
     public static function resetRedisData()
     {
-
-        self::cleanRedisData(RedisKeyContainer::getRedisKey(RedisKeyConfig::REDIS_KEY_LOG, 0));
+        self::cleanRedisData(RedisKeyService::getRedisKey(RedisKeyConfig::REDIS_KEY_LOG, 0));
     }
 
     //清理redis数据
     private static function cleanRedisData($redisKey){
-        $key     = $this->redisKeyList->getRedisKey($redisKey, "*");
-        $keyList = $this->redis->getKeys($key);
+
+        $key = RedisKeyService::getRedisKey($redisKey, "*");
+        $keyList = RedisDBService::getInstance()->getKeys($key);
         foreach ($keyList as $key) {
-            $this->redis->delete($key);
+            RedisDBService::getInstance()->delete($key);
         }
     }
 }

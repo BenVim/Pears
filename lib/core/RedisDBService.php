@@ -7,10 +7,18 @@ use Redis;
 use lib\core\Config;
 
 // 改造成单例
-class RedisDB
+class RedisDBService
 {
-
     protected $redis;
+    protected static $_instance = null;
+
+    public static function getInstance()
+    {
+        if (self::$_instance === null) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
 
     public function __construct()
     {
@@ -41,19 +49,23 @@ class RedisDB
         return $this->redis->exists($key);
     }
 
-    public function sAdd($key, $value){
+    public function sAdd($key, $value)
+    {
         return $this->redis->sAdd($key, $value);
     }
 
-    public function sRemove($key, $value){
+    public function sRemove($key, $value)
+    {
         return $this->redis->sRem($key, $value);
     }
 
-    public function sMembers($key){
+    public function sMembers($key)
+    {
         return $this->redis->sMembers($key);
     }
 
-    public function mget($key){
+    public function mget($key)
+    {
         return $this->redis->mget($key);
     }
 
@@ -62,13 +74,16 @@ class RedisDB
         return $this->redis->set($key, $value);
     }
 
-    public function setValueNx($key, $value){
+    public function setValueNx($key, $value)
+    {
         return $this->redis->setnx($key, $value);
     }
 
-    public function getSet($key, $value){
+    public function getSet($key, $value)
+    {
         return $this->redis->getSet($key, $value);
     }
+
     public function getValue($key)
     {
         return $this->redis->get($key);
@@ -79,19 +94,23 @@ class RedisDB
         return $this->redis->hMget($key, $fields);
     }
 
-    public function lPush($key, $value){
+    public function lPush($key, $value)
+    {
         return $this->redis->lPush($key, $value);
     }
 
-    public function lPushx($key, $value){
+    public function lPushx($key, $value)
+    {
         return $this->redis->lPushx($key, $value);
     }
 
-    public function rPop($key){
+    public function rPop($key)
+    {
         return $this->redis->rPop($key);
     }
 
-    public function lSize($key){
+    public function lSize($key)
+    {
         return $this->redis->lSize($key);
     }
 
