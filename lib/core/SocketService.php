@@ -6,16 +6,11 @@
  * Time: 00:17
  */
 
-namespace src\factory;
+namespace lib\core;
 
 
 use config\RedisKeyConfig;
-use lib\core\Command;
-use lib\core\Config;
-use lib\core\PDORepository;
-use lib\core\RedisDBService;
-use lib\core\RedisKeyService;
-use lib\core\SwooleWebSocket;
+use src\factory\CommandFactoryService;
 
 class SocketService
 {
@@ -92,7 +87,7 @@ class SocketService
         $result = @json_decode($respond, true);
         $data   = json_decode($result["data"], true);
         if (!isset($data['t'])) {
-            dump('no t param');
+            dump('no t param');//TODO 修改成错误返回给客户端。
             return;
         }
         $data['fd']       = $result['fd'];

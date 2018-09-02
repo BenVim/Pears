@@ -1,6 +1,7 @@
 <?php
 
-namespace src\factory;
+namespace lib\core;
+use config\CommandTypeConfig;
 
 /**
  * Created by PhpStorm.
@@ -13,7 +14,7 @@ class CommandFactoryService
     public static $list = [];
 
     public static function init(){
-        $commandInfoList = CommandType::getCommandList();
+        $commandInfoList = CommandTypeConfig::registerCommand();
         foreach ($commandInfoList as $key => $value){
             self::register($key, $value);
         }
