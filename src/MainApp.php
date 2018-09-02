@@ -38,6 +38,10 @@ class MainApp
     {
         $path = \getcwd() . '/..env';
         Config::loadConfigurationFiles($path);
+
+        $this->serviceStartBefore();
+        $this->startService();
+        $this->serviceStartAfter();
     }
 
     public function startService()
@@ -49,7 +53,6 @@ class MainApp
 
     //启动服务之前
     private function serviceStartBefore(){
-        $this->resetRedisData();
         RedisService::resetRedisData();
         CommandFactoryService::init();
     }
@@ -59,7 +62,10 @@ class MainApp
 
     }
 
+    //服务停止的操作
+    private function serviceStop(){
 
+    }
 
     public function onWorkerStart($server, $worker_id)
     {
