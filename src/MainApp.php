@@ -9,10 +9,10 @@
 
 namespace src;
 
+use lib\core\CommandFactoryService;
 use lib\core\Config;
-use src\factory\CommandFactoryService;
+use lib\core\SocketService;
 use src\factory\RedisService;
-use src\factory\SocketService;
 
 class MainApp
 {

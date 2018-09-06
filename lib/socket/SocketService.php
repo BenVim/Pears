@@ -10,7 +10,6 @@ namespace lib\core;
 
 
 use config\RedisKeyConfig;
-use src\factory\CommandFactoryService;
 
 class SocketService
 {
