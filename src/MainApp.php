@@ -9,10 +9,8 @@
 
 namespace src;
 
-use lib\core\CommandFactoryService;
 use lib\core\Config;
 use lib\core\SocketService;
-use src\factory\RedisService;
 
 class MainApp
 {
@@ -35,15 +33,13 @@ class MainApp
 
     public function startService()
     {
-        //注册协议命令
         $this->server = new SocketService();
         $this->server->startService();
     }
 
     //启动服务之前
     private function serviceStartBefore(){
-        RedisService::resetRedisData();
-        CommandFactoryService::init();
+
     }
 
     //启动服务之后

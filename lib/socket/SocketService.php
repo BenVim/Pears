@@ -10,6 +10,7 @@ namespace lib\core;
 
 
 use config\RedisKeyConfig;
+use src\factory\RedisService;
 
 class SocketService
 {
@@ -24,6 +25,8 @@ class SocketService
 
     public function startService()
     {
+        RedisService::resetRedisData();
+        CommandFactoryService::init();
         $this->server->start();
     }
 
