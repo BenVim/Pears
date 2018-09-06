@@ -9,4 +9,3 @@ interface CodecInterface
     public static function decode($data);
 }
 
-?>

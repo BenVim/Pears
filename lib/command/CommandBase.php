@@ -7,7 +7,7 @@
  * 协议的基类
  */
 
-namespace lib\core;
+namespace lib\command;
 
 
 class CommandBase

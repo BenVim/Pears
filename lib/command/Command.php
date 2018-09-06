@@ -1,6 +1,6 @@
 <?php
 
-namespace lib\core;
+namespace lib\command;
 
 /*
  * @Author: Ben 
